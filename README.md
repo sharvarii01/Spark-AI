@@ -3,7 +3,7 @@
 A sleek, app-like AI chatbot powered by the Google Gemini API.
 
 ## 🌟 Live Demo / App Installation
-Try it out live or install it on your phone: **[Link to Spark AI on Render here]**
+Try it out live or install it on your phone: **[[Link to Spark AI on Render here](https://spark-ai-vmdi.onrender.com)]**
 *(Replace the text above with your actual `https://spark-ai.onrender.com` link!)*
 
 ## Features
