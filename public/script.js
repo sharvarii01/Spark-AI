@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('menuToggle');
     const closeSidebarBtn = document.getElementById('closeSidebarBtn');
     const sidebar = document.getElementById('sidebar');
+    const landingPage = document.getElementById('landingPage');
+    const startAppBtn = document.getElementById('startAppBtn');
 
     // App State
     let sessions = JSON.parse(localStorage.getItem('sparkAiSessions')) || [];
@@ -20,6 +22,26 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     renderHistoryList();
     loadNewChat();
+    initLandingPage();
+
+    // Landing Page Logic
+    function initLandingPage() {
+        if (!landingPage || !startAppBtn) return;
+        
+        if (sessionStorage.getItem('sparkAiLandingSeen')) {
+            landingPage.style.display = 'none';
+            landingPage.classList.add('hidden');
+        }
+
+        startAppBtn.addEventListener('click', () => {
+            landingPage.classList.add('hidden');
+            sessionStorage.setItem('sparkAiLandingSeen', 'true');
+            setTimeout(() => {
+                landingPage.style.display = 'none';
+                messageInput.focus();
+            }, 600); // Wait for fade transition
+        });
+    }
 
     // Theme Logic
     function initTheme() {

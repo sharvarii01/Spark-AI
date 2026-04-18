@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spark AI</title>
-    <!-- Use Inter font for a modern look -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Use Inter and Playfair for a modern and elegant look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -18,6 +18,33 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
+    <!-- Landing Page Overlay -->
+    <div id="landingPage" class="landing-page">
+        <div class="landing-content">
+            <div class="landing-badge">
+                <span class="dot"></span> Next-Gen AI Assistant
+            </div>
+            <h1 class="landing-title">Meet Spark AI</h1>
+            <p class="landing-subtitle">
+                AI that doesn't just respond — it <strong>executes</strong>. Write code, solve problems, and summarize documents through natural language powered by Google Gemini.
+            </p>
+            <div class="landing-actions">
+                <button id="startAppBtn" class="primary-btn pulse-glow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Try Spark AI Now
+                </button>
+                <button class="secondary-btn">Explore Architecture</button>
+            </div>
+            <div class="landing-footer-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+
     <div class="app-layout">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
