@@ -1,10 +1,11 @@
-const CACHE_NAME = 'spark-ai-v2';
+const CACHE_NAME = 'spark-ai-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './script.js',
-  './logo.png'
+  './logo.png',
+  './bg.jpg'
 ];
 
 self.addEventListener('install', (event) => {
