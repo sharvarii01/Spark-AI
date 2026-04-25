@@ -428,8 +428,8 @@ textarea::placeholder { color: var(--text-muted); }
     height: 100vh;
     background: url('bg.jpg') no-repeat center center;
     background-size: cover;
-    background-color: #0a0a0a; /* Fallback */
-    color: #ffffff;
+    background-color: #f0f4f8; /* Fallback */
+    color: #1a1a1a;
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -482,7 +482,7 @@ textarea::placeholder { color: var(--text-muted); }
     letter-spacing: -0.02em;
     margin-bottom: 20px;
     line-height: 1.1;
-    background: linear-gradient(to right, #ffffff, #dcdcdc);
+    background: linear-gradient(to right, #000000, #444444);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -508,8 +508,8 @@ textarea::placeholder { color: var(--text-muted); }
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: #ffffff;
-    color: #0a0a0a;
+    background-color: #1a1a1a;
+    color: #ffffff;
     border: none;
     border-radius: 12px;
     padding: 14px 28px;
@@ -526,9 +526,9 @@ textarea::placeholder { color: var(--text-muted); }
 }
 
 .secondary-btn {
-    background-color: rgba(255, 255, 255, 0.02);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #1a1a1a;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     padding: 14px 28px;
     font-size: 1rem;
