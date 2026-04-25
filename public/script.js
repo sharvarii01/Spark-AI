@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authSwitchText = document.getElementById('authSwitchText');
     const authError = document.getElementById('authError');
     const skipAuthBtn = document.getElementById('skipAuthBtn');
+    const googleSignInBtn = document.getElementById('googleSignInBtn');
     const userProfile = document.getElementById('userProfile');
     const userEmail = document.getElementById('userEmail');
     const userAvatar = document.getElementById('userAvatar');
@@ -136,6 +137,20 @@ document.addEventListener('DOMContentLoaded', () => {
             authError.classList.remove('hidden');
         }
     });
+
+    if (googleSignInBtn) {
+        googleSignInBtn.addEventListener('click', async () => {
+            authError.classList.add('hidden');
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                // onAuthStateChanged will handle the UI update
+            } catch (error) {
+                authError.textContent = error.message.replace('Firebase: ', '');
+                authError.classList.remove('hidden');
+            }
+        });
+    }
 
     // Landing Page Logic
     function initLandingPage() {
