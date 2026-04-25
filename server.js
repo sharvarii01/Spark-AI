@@ -42,14 +42,42 @@ app.post('/api/chat', async (req, res) => {
       },
     });
 
-    const result = await chatSession.sendMessage(message);
-    const response = await result.response;
-    const text = response.text();
+    let attempt = 0;
+    const maxRetries = 3;
+    let delay = 1000;
+    let text = "";
+
+    while (attempt < maxRetries) {
+      try {
+        const result = await chatSession.sendMessage(message);
+        const response = await result.response;
+        text = response.text();
+        break; // Success, break out of the loop
+      } catch (sendError) {
+        attempt++;
+        const isOverloaded = sendError.status === 503 || (sendError.message && sendError.message.includes('503'));
+        
+        if (attempt >= maxRetries || !isOverloaded) {
+          throw sendError; // Rethrow to main catch block
+        }
+        
+        console.warn(`[API] Server busy (503), retrying in ${delay}ms... (Attempt ${attempt} of ${maxRetries - 1})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2; // Exponential backoff (1s, 2s)
+      }
+    }
 
     res.json({ reply: text });
   } catch (error) {
     console.error('Error communicating with Gemini API:', error);
-    res.status(500).json({ error: 'Failed to get response from AI. ' + error.message });
+    
+    let errorMessage = 'Failed to get response from AI. ' + error.message;
+    
+    if (error.status === 503 || (error.message && error.message.includes('503'))) {
+      errorMessage = "Spark AI is currently experiencing very high demand and needs a quick breather. Please try asking again in a few moments!";
+    }
+
+    res.status(500).json({ error: errorMessage });
   }
 });
 

@@ -21,28 +21,15 @@
     <!-- Landing Page Overlay -->
     <div id="landingPage" class="landing-page">
         <div class="landing-content">
-            <div class="landing-badge">
-                <span class="dot"></span> Next-Gen AI Assistant
-            </div>
-            <h1 class="landing-title">Meet Spark AI</h1>
-            <p class="landing-subtitle">
-                From prompts to powerful execution.<br>
-                Code, analyze, and summarize — effortlessly, intelligently, instantly.
-            </p>
+            <h1 class="landing-title">Spark AI</h1>
+
             <div class="landing-actions">
                 <button id="startAppBtn" class="primary-btn pulse-glow">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    Try Spark AI Now
+                    Login / Sign In
                 </button>
                 <a href="https://github.com/sharvarii01/Spark-AI" target="_blank" rel="noopener noreferrer" class="secondary-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Explore Architecture</a>
             </div>
-            <div class="landing-footer-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-            </div>
+
         </div>
     </div>
 
@@ -56,6 +43,16 @@
                 </button>
                 <button id="closeSidebarBtn" class="mobile-only close-btn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <div id="userProfile" class="user-profile hidden">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-email" id="userEmail">user@example.com</div>
+                </div>
+                <button id="logoutBtn" class="action-btn" title="Sign Out">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                 </button>
             </div>
             <div class="sidebar-content">
@@ -113,7 +110,34 @@
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal hidden">
+        <div class="auth-box">
+            <h2 id="authTitle">Sign In to Spark AI</h2>
+            <p id="authSubtitle">Access your conversations anywhere.</p>
+            
+            <form id="authForm" class="auth-form">
+                <div class="input-group">
+                    <label for="emailInput">Email</label>
+                    <input type="email" id="emailInput" required placeholder="you@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="passwordInput">Password</label>
+                    <input type="password" id="passwordInput" required placeholder="••••••••">
+                </div>
+                <div id="authError" class="auth-error hidden"></div>
+                <button type="submit" id="authSubmitBtn" class="primary-btn">Sign In</button>
+            </form>
+            
+            <div class="auth-switch">
+                <span id="authSwitchText">Don't have an account?</span>
+                <button id="authSwitchBtn" class="text-btn">Sign Up</button>
+            </div>
+            <button id="skipAuthBtn" class="text-btn muted-btn">Continue Locally (No Sync)</button>
+        </div>
+    </div>
+    
+    <script type="module" src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
