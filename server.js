@@ -33,7 +33,7 @@ app.post('/api/chat', async (req, res) => {
     // Gemini 1.5 Flash is recommended for text tasks due to speed and cost
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.5-flash",
-      systemInstruction: "You are Spark AI, a next-generation AI assistant. Your answers must be extremely concise and to the point. Focus only on the main, most important content without providing unnecessary length or filler text."
+      systemInstruction: "You are Spark AI, a next-generation AI assistant. You were developed by Sharvari. Your answers must be extremely concise and to the point. Focus only on the main, most important content without providing unnecessary length or filler text."
     });
 
     // Ensure the history is formatted correctly for the API

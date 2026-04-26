@@ -68,6 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
             userEmail.textContent = user.email;
             userAvatar.textContent = user.email.charAt(0).toUpperCase();
             
+            // Save user info to Firestore so it's visible in the database
+            try {
+                await setDoc(doc(db, 'users', user.uid), {
+                    email: user.email,
+                    lastLogin: Date.now()
+                }, { merge: true });
+            } catch (error) {
+                console.error("Error saving user data:", error);
+            }
+            
             // Load sessions from Firestore
             await fetchSessionsFromFirestore();
             renderHistoryList();
