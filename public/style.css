@@ -852,3 +852,95 @@ textarea::placeholder { color: var(--text-muted); }
     background-color: var(--hover-bg);
     color: #ef4444;
 }
+/* File Upload Styles */
+.file-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    width: fit-content;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.file-preview.hidden {
+    display: none;
+}
+
+.file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color);
+}
+
+#filePreviewName {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#removeFileBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+}
+
+#removeFileBtn:hover {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: color 0.2s, background-color 0.2s;
+    margin-right: 4px;
+    margin-bottom: 2px;
+}
+
+.icon-btn:hover {
+    color: var(--accent-color);
+    background-color: var(--hover-bg);
+}
+
+.message-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    border: 1px solid var(--border-color);
+    width: fit-content;
+}
+body.light-theme .message-file {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+

@@ -30,6 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const landingPage = document.getElementById('landingPage');
     const startAppBtn = document.getElementById('startAppBtn');
     
+    // File Attachment Elements
+    const attachBtn = document.getElementById('attachBtn');
+    const fileInput = document.getElementById('fileInput');
+    const filePreview = document.getElementById('filePreview');
+    const filePreviewName = document.getElementById('filePreviewName');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+    
     // Auth DOM Elements
     const authModal = document.getElementById('authModal');
     const authForm = document.getElementById('authForm');
@@ -53,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let chatHistory = []; 
     let currentUser = null;
     let isRegistering = false;
+    let currentFileData = null;
 
     // Initialize App
     initTheme();
@@ -217,13 +225,100 @@ document.addEventListener('DOMContentLoaded', () => {
     messageInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
-        sendBtn.disabled = this.value.trim() === '';
+        checkSendBtnState();
     });
+
+    function checkSendBtnState() {
+        sendBtn.disabled = messageInput.value.trim() === '' && !currentFileData;
+    }
+
+    // File Attachment Logic
+    attachBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Limit size to 5MB to ensure fast processing for non-images
+        if (file.size > 5 * 1024 * 1024) {
+            alert("File is too large. Please select a file under 5MB for fast processing.");
+            fileInput.value = '';
+            return;
+        }
+
+        // Show loading state in preview
+        filePreviewName.textContent = "Processing file...";
+        filePreview.classList.remove('hidden');
+
+        compressAndReadFile(file, (base64String, mimeType) => {
+            currentFileData = {
+                mimeType: mimeType,
+                data: base64String,
+                name: file.name
+            };
+            filePreviewName.textContent = file.name;
+            checkSendBtnState();
+        });
+    });
+
+    function compressAndReadFile(file, callback) {
+        if (!file.type.startsWith('image/')) {
+            // For PDFs and text, just read directly
+            const reader = new FileReader();
+            reader.onload = (event) => callback(event.target.result.split(',')[1], file.type);
+            reader.readAsDataURL(file);
+            return;
+        }
+        
+        // For images, compress using Canvas to make it incredibly fast
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const MAX_WIDTH = 1024;
+                const MAX_HEIGHT = 1024;
+                
+                if (width > height) {
+                    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                } else {
+                    if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Compress to JPEG with 70% quality
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                callback(dataUrl.split(',')[1], 'image/jpeg');
+            }
+            img.src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
+    removeFileBtn.addEventListener('click', () => {
+        clearFilePreview();
+    });
+
+    function clearFilePreview() {
+        currentFileData = null;
+        fileInput.value = '';
+        filePreview.classList.add('hidden');
+        filePreviewName.textContent = '';
+        checkSendBtnState();
+    }
 
     messageInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
-            if (this.value.trim() !== '') {
+            if (this.value.trim() !== '' || currentFileData) {
                 chatForm.dispatchEvent(new Event('submit'));
             }
         }
@@ -234,14 +329,14 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         
         const messageText = messageInput.value.trim();
-        if (!messageText) return;
+        if (!messageText && !currentFileData) return;
 
         // Ensure we have an active session ID
         if (!currentSessionId) {
             currentSessionId = Date.now().toString();
             const newSession = {
                 id: currentSessionId,
-                title: messageText.substring(0, 30) + (messageText.length > 30 ? '...' : ''),
+                title: (messageText ? messageText.substring(0, 30) : 'File upload') + ((messageText && messageText.length > 30) ? '...' : ''),
                 messages: [],
                 apiHistory: [],
                 timestamp: Date.now()
@@ -249,17 +344,22 @@ document.addEventListener('DOMContentLoaded', () => {
             sessions.unshift(newSession);
         }
 
+        const sentFileData = currentFileData;
+        const sentMessage = messageText;
+
         // Reset input immediately
         messageInput.value = '';
         messageInput.style.height = 'auto';
+        clearFilePreview();
         sendBtn.disabled = true;
 
         // Current Session Reference
         let session = sessions.find(s => s.id === currentSessionId);
 
         // Add User Message
-        appendMessage('user', messageText);
-        session.messages.push({ role: 'user', text: messageText });
+        const attachedFileName = sentFileData ? sentFileData.name : null;
+        appendMessage('user', sentMessage, true, attachedFileName);
+        session.messages.push({ role: 'user', text: sentMessage, fileName: attachedFileName });
         
         // Add Loading
         const loadingId = appendLoadingIndicator();
@@ -269,7 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: messageText,
+                    message: sentMessage,
+                    fileData: sentFileData ? { mimeType: sentFileData.mimeType, data: sentFileData.data } : null,
                     history: session.apiHistory
                 })
             });
@@ -288,7 +389,8 @@ document.addEventListener('DOMContentLoaded', () => {
             session.messages.push({ role: 'model', text: data.reply });
 
             // Update API History
-            session.apiHistory.push({ role: 'user', parts: [{ text: messageText }] });
+            const historyText = sentMessage + (attachedFileName ? `\n[Attached file: ${attachedFileName}]` : '');
+            session.apiHistory.push({ role: 'user', parts: [{ text: historyText }] });
             session.apiHistory.push({ role: 'model', parts: [{ text: data.reply }] });
 
             saveSessions();
@@ -326,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatWindow.innerHTML = '';
         
         session.messages.forEach(msg => {
-            appendMessage(msg.role, msg.text, false);
+            appendMessage(msg.role, msg.text, false, msg.fileName);
         });
         
         renderHistoryList();
@@ -377,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function appendMessage(role, text, animate = true) {
+    function appendMessage(role, text, animate = true, fileName = null) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${role === 'user' ? 'user' : 'system'}`;
         
@@ -392,9 +494,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
         
+        if (fileName) {
+            const fileDiv = document.createElement('div');
+            fileDiv.className = 'message-file';
+            fileDiv.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> ${fileName}`;
+            contentDiv.appendChild(fileDiv);
+        }
+        
         if (role === 'model' || role === 'system') {
-            const rawMarkup = marked.parse(text);
-            contentDiv.innerHTML = DOMPurify.sanitize(rawMarkup);
+            const rawMarkup = marked.parse(text || "");
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = DOMPurify.sanitize(rawMarkup);
+            contentDiv.appendChild(tempDiv);
             
             if (animate) {
                 messageDiv.style.opacity = '0';
@@ -406,9 +517,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 10);
             }
         } else {
-            const p = document.createElement('p');
-            p.textContent = text;
-            contentDiv.appendChild(p);
+            if (text) {
+                const p = document.createElement('p');
+                p.textContent = text;
+                contentDiv.appendChild(p);
+            }
         }
         
         messageDiv.appendChild(avatarDiv);
