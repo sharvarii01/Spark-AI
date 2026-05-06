@@ -852,6 +852,10 @@ textarea::placeholder { color: var(--text-muted); }
     background-color: var(--hover-bg);
     color: #ef4444;
 }
+.hidden {
+    display: none !important;
+}
+
 /* File Upload Styles */
 .file-preview {
     display: flex;
